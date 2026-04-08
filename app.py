@@ -208,5 +208,118 @@ def view_flower(flower_id):
 
     return render_template('view_flower.html', flower=flower)
 
+# ===== CATEGORY ROUTES =====
+
+@app.route('/categories')
+def categories():
+    """แสดงรายการหมวดหมู่ทั้งหมด"""
+    categories = get_categories()
+    return render_template('categories.html', categories=categories)
+
+@app.route('/add-category', methods=['GET', 'POST'])
+def add_category():
+    """เพิ่มหมวดหมู่ใหม่"""
+    if request.method == 'POST':
+        category_name = request.form.get('category_name')
+
+        if not category_name or category_name.strip() == '':
+            flash('❌ กรุณากรอกชื่อหมวดหมู่', 'error')
+            return redirect(url_for('add_category'))
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # ตรวจสอบว่ามีหมวดหมู่นี้อยู่แล้วหรือไม่
+            cursor.execute("SELECT * FROM Categories WHERE category_name = ?", (category_name,))
+            if cursor.fetchone():
+                flash('❌ หมวดหมู่นี้มีอยู่แล้ว', 'error')
+                conn.close()
+                return redirect(url_for('add_category'))
+            
+            cursor.execute('INSERT INTO Categories (category_name) VALUES (?)', (category_name,))
+            conn.commit()
+            conn.close()
+
+            flash(f'✅ เพิ่มหมวดหมู่ "{category_name}" สำเร็จ!', 'success')
+            return redirect(url_for('categories'))
+
+        except Exception as e:
+            flash(f'❌ เกิดข้อผิดพลาด: {str(e)}', 'error')
+            return redirect(url_for('add_category'))
+
+    return render_template('add_category.html')
+
+@app.route('/edit-category/<int:category_id>', methods=['GET', 'POST'])
+def edit_category(category_id):
+    """แก้ไขหมวดหมู่"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM Categories WHERE category_id = ?', (category_id,))
+    category = cursor.fetchone()
+    conn.close()
+
+    if not category:
+        flash('❌ ไม่พบหมวดหมู่นี้', 'error')
+        return redirect(url_for('categories'))
+
+    if request.method == 'POST':
+        category_name = request.form.get('category_name')
+
+        if not category_name or category_name.strip() == '':
+            flash('❌ กรุณากรอกชื่อหมวดหมู่', 'error')
+            return redirect(url_for('edit_category', category_id=category_id))
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # ตรวจสอบว่ามีหมวดหมู่นี้อยู่แล้วหรือไม่ (ยกเว้นตัวมันเอง)
+            cursor.execute("SELECT * FROM Categories WHERE category_name = ? AND category_id != ?", 
+                         (category_name, category_id))
+            if cursor.fetchone():
+                flash('❌ หมวดหมู่นี้มีอยู่แล้ว', 'error')
+                conn.close()
+                return redirect(url_for('edit_category', category_id=category_id))
+            
+            cursor.execute('UPDATE Categories SET category_name = ? WHERE category_id = ?', 
+                         (category_name, category_id))
+            conn.commit()
+            conn.close()
+
+            flash(f'✅ แก้ไขหมวดหมู่สำเร็จ!', 'success')
+            return redirect(url_for('categories'))
+
+        except Exception as e:
+            flash(f'❌ เกิดข้อผิดพลาด: {str(e)}', 'error')
+            return redirect(url_for('edit_category', category_id=category_id))
+
+    return render_template('edit_category.html', category=category)
+
+@app.route('/delete-category/<int:category_id>', methods=['POST'])
+def delete_category(category_id):
+    """ลบหมวดหมู่"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # ตรวจสอบว่ามีดอกไม้ในหมวดหมู่นี้หรือไม่
+    cursor.execute('SELECT COUNT(*) FROM Flowers WHERE category_id = ?', (category_id,))
+    flower_count = cursor.fetchone()[0]
+    
+    if flower_count > 0:
+        flash(f'❌ ไม่สามารถลบได้ มีดอกไม้ {flower_count} รายการในหมวดหมู่นี้', 'error')
+        conn.close()
+        return redirect(url_for('categories'))
+
+    try:
+        cursor.execute('DELETE FROM Categories WHERE category_id = ?', (category_id,))
+        conn.commit()
+        conn.close()
+        flash('✅ ลบหมวดหมู่สำเร็จ!', 'success')
+    except Exception as e:
+        flash(f'❌ เกิดข้อผิดพลาด: {str(e)}', 'error')
+
+    return redirect(url_for('categories'))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

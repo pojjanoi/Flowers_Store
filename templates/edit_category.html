@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขหมวดหมู่ 📁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-header text-white py-8 shadow-2xl">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('categories') }}" class="hover:text-pink-200 transition">
+                        <i class="fas fa-arrow-left text-2xl"></i>
+                    </a>
+                    <h1 class="text-3xl font-bold">📁 แก้ไขหมวดหมู่</h1>
+                </div>
+                <nav class="flex gap-3">
+                    <a href="{{ url_for('index') }}" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+                        <i class="fas fa-home"></i> หน้าหลัก
+                    </a>
+                    <a href="{{ url_for('add_flower') }}" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i> เพิ่มดอกไม้
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg font-semibold text-white {% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} animate-pulse">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-4 mt-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ url_for('index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-pink-600">
+                        <i class="fas fa-home mr-2"></i> หน้าหลัก
+                    </a>
+                </li>
+                <li class="inline-flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{{ url_for('categories') }}" class="text-sm font-medium text-gray-700 hover:text-pink-600">
+                        หมวดหมู่
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-sm font-medium text-pink-600">แก้ไขหมวดหมู่</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <!-- Current Info Card -->
+            <div class="bg-purple-100 border-l-4 border-purple-500 p-4 rounded-lg mb-6 shadow-md">
+                <p class="text-purple-800 font-semibold text-lg">
+                    <i class="fas fa-info-circle mr-2"></i>กำลังแก้ไข: <strong>{{ category['category_name'] }}</strong> 
+                    (ID: {{ category['category_id'] }})
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-gradient-to-r from-pink-500 to-purple-500">
+                <form method="POST" class="space-y-6">
+                    <!-- Category Name -->
+                    <div>
+                        <label for="category_name" class="block text-gray-700 font-bold mb-3 text-lg">
+                            <i class="fas fa-folder text-pink-500 mr-2"></i>ชื่อหมวดหมู่
+                        </label>
+                        <input 
+                            type="text" 
+                            id="category_name" 
+                            name="category_name" 
+                            required
+                            value="{{ category['category_name'] }}"
+                            placeholder="เช่น ดอกไม้สวยๆ หรือ ดอกไม้นำเข้า"
+                            class="w-full px-5 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition text-lg"
+                        >
+                        <p class="text-gray-500 text-sm mt-2">💡 เลือกชื่อที่อธิบายหมวดหมู่นี้ได้ชัดเจน</p>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex gap-4 pt-6 border-t-2 border-gray-200">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                            <i class="fas fa-save mr-2"></i>บันทึกการแก้ไข
+                        </button>
+                        <a 
+                            href="{{ url_for('categories') }}" 
+                            class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition text-center shadow-lg transform hover:scale-105"
+                        >
+                            <i class="fas fa-times mr-2"></i>ยกเลิก
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-md">
+                <h3 class="font-bold text-yellow-800 mb-3 text-lg"><i class="fas fa-exclamation-triangle mr-2"></i>สิ่งสำคัญที่ต้องทราบ</h3>
+                <ul class="text-yellow-700 space-y-2">
+                    <li><i class="fas fa-arrow-right text-yellow-600 mr-2"></i>ชื่อหมวดหมู่ต้องไม่ซ้ำกับหมวดหมู่อื่น</li>
+                    <li><i class="fas fa-arrow-right text-yellow-600 mr-2"></i>การแก้ไขชื่อจะมีผลกับดอกไม้ทั้งหมดในหมวดหมู่นี้</li>
+                    <li><i class="fas fa-arrow-right text-yellow-600 mr-2"></i>กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนบันทึก</li>
+                    <li><i class="fas fa-arrow-right text-yellow-600 mr-2"></i>หลังจากบันทึกจะกลับไปหน้ารายการหมวดหมู่</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-800 via-purple-800 to-gray-800 text-white text-center py-8 mt-16 shadow-2xl">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center gap-6 mb-4">
+                <a href="{{ url_for('index') }}" class="text-white hover:text-pink-300 transition flex items-center gap-2">
+                    <i class="fas fa-home"></i> หน้าหลัก
+                </a>
+                <span class="text-gray-400">|</span>
+                <a href="{{ url_for('categories') }}" class="text-white hover:text-pink-300 transition flex items-center gap-2">
+                    <i class="fas fa-folder-open"></i> หมวดหมู่
+                </a>
+                <span class="text-gray-400">|</span>
+                <span class="text-pink-300 font-semibold">แก้ไขหมวดหมู่</span>
+            </div>
+            <p class="text-lg font-semibold"><i class="fas fa-copyright mr-2"></i>2026 ระบบจัดการร้านดอกไม้</p>
+        </div>
+    </footer>
+</body>
+</html>
