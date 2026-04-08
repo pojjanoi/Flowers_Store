@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ flower['flower_name'] }} 🌸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .detail-card {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-header text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('index') }}" class="hover:text-gray-200 transition">
+                    <i class="fas fa-arrow-left text-2xl"></i>
+                </a>
+                <h1 class="text-3xl font-bold">รายละเอียดดอกไม้ 🌸</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Detail Card -->
+            <div class="detail-card bg-white rounded-xl shadow-2xl overflow-hidden">
+                <!-- Header Section -->
+                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 px-8 py-12">
+                    <h2 class="text-4xl font-bold text-white mb-2">{{ flower['flower_name'] }}</h2>
+                    <p class="text-white text-lg">
+                        <i class="fas fa-id-card mr-2"></i>
+                        รหัส: {{ flower['flower_id'] }}
+                    </p>
+                </div>
+
+                <!-- Body Section -->
+                <div class="p-8">
+                    <!-- Status Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 pb-8 border-b-2 border-gray-200">
+                        <!-- Category Badge -->
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">
+                                <i class="fas fa-tag text-purple-500 mr-2"></i>หมวดหมู่
+                            </p>
+                            <div class="inline-block bg-purple-100 text-purple-800 px-4 py-2 rounded-lg font-bold text-lg">
+                                {{ flower['category_name'] }}
+                            </div>
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">
+                                <i class="fas fa-warehouse text-blue-500 mr-2"></i>สถานะสต็อก
+                            </p>
+                            <div>
+                                {% if flower['quantity'] > 20 %}
+                                    <div class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-lg font-bold text-lg">
+                                        <i class="fas fa-check-circle mr-2"></i>มีสต็อกเพียงพอ
+                                    </div>
+                                {% elif flower['quantity'] > 0 %}
+                                    <div class="inline-block bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold text-lg">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>สต็อกใกล้หมด
+                                    </div>
+                                {% else %}
+                                    <div class="inline-block bg-red-100 text-red-800 px-4 py-2 rounded-lg font-bold text-lg">
+                                        <i class="fas fa-times-circle mr-2"></i>หมดแล้ว
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price and Quantity Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b-2 border-gray-200">
+                        <!-- Price -->
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg">
+                            <p class="text-gray-600 text-sm font-semibold mb-2">
+                                <i class="fas fa-dollar-sign text-green-600 mr-2"></i>ราคา
+                            </p>
+                            <p class="text-4xl font-bold text-green-600">
+                                ฿{{ "%.2f"|format(flower['price']) }}
+                            </p>
+                            <p class="text-gray-600 text-sm mt-2">ต่อชอ</p>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-lg">
+                            <p class="text-gray-600 text-sm font-semibold mb-2">
+                                <i class="fas fa-box text-blue-600 mr-2"></i>จำนวนคงเหลือ
+                            </p>
+                            <p class="text-4xl font-bold text-blue-600">
+                                {{ flower['quantity'] }}
+                            </p>
+                            <p class="text-gray-600 text-sm mt-2">ชอ</p>
+                        </div>
+                    </div>
+
+                    <!-- Description Section -->
+                    <div class="mb-8 pb-8 border-b-2 border-gray-200">
+                        <p class="text-gray-600 font-semibold mb-3">
+                            <i class="fas fa-file-alt text-yellow-500 mr-2"></i>รายละเอียด
+                        </p>
+                        {% if flower['description'] %}
+                            <p class="text-gray-800 leading-relaxed bg-gray-50 p-4 rounded-lg">
+                                {{ flower['description'] }}
+                            </p>
+                        {% else %}
+                            <p class="text-gray-500 italic">ไม่มีรายละเอียดเพิ่มเติม</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Summary Section -->
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded">
+                        <h3 class="font-bold text-purple-800 mb-3">
+                            <i class="fas fa-list mr-2"></i>สรุปข้อมูล
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div>
+                                <p class="text-gray-600 text-sm">รหัส</p>
+                                <p class="font-bold text-purple-800">{{ flower['flower_id'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">ราคารวม</p>
+                                <p class="font-bold text-green-600">
+                                    ฿{{ "%.2f"|format(flower['price'] * flower['quantity']) }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">หมวดหมู่</p>
+                                <p class="font-bold text-purple-800">{{ flower['category_name'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">สถานะ</p>
+                                <p class="font-bold {% if flower['quantity'] > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {% if flower['quantity'] > 0 %}มีสินค้า{% else %}หมดแล้ว{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="bg-gray-100 px-8 py-6 flex gap-4">
+                    <a 
+                        href="{{ url_for('edit_flower', flower_id=flower['flower_id']) }}" 
+                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition text-center"
+                    >
+                        <i class="fas fa-edit mr-2"></i>แก้ไข
+                    </a>
+                    <form action="{{ url_for('delete_flower', flower_id=flower['flower_id']) }}" method="POST" class="flex-1" onsubmit="return confirm('คุณแน่ใจหรือว่าจะลบรายการนี้?');">
+                        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition">
+                            <i class="fas fa-trash mr-2"></i>ลบ
+                        </button>
+                    </form>
+                    <a 
+                        href="{{ url_for('index') }}" 
+                        class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition text-center"
+                    >
+                        <i class="fas fa-arrow-left mr-2"></i>กลับ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-6 mt-12">
+        <p><i class="fas fa-copyright"></i> 2026 ระบบจัดการร้านดอกไม้</p>
+    </footer>
+</body>
+</html>

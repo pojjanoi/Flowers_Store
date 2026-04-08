@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มดอกไม้ใหม่ 🌸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-header text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('index') }}" class="hover:text-gray-200 transition">
+                    <i class="fas fa-arrow-left text-2xl"></i>
+                </a>
+                <h1 class="text-3xl font-bold">เพิ่มดอกไม้ใหม่ 🌸</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg font-semibold text-white {% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} animate-pulse">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <form method="POST" class="space-y-6">
+                    <!-- Flower Name -->
+                    <div>
+                        <label for="flower_name" class="block text-gray-700 font-bold mb-2">
+                            <i class="fas fa-flower text-pink-500 mr-2"></i>ชื่อดอกไม้
+                        </label>
+                        <input 
+                            type="text" 
+                            id="flower_name" 
+                            name="flower_name" 
+                            required
+                            placeholder="เช่น กุหลาบแดง"
+                            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        >
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label for="category_id" class="block text-gray-700 font-bold mb-2">
+                            <i class="fas fa-tag text-purple-500 mr-2"></i>หมวดหมู่
+                        </label>
+                        <select 
+                            id="category_id" 
+                            name="category_id" 
+                            required
+                            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        >
+                            <option value="">-- เลือกหมวดหมู่ --</option>
+                            {% for category in categories %}
+                                <option value="{{ category['category_id'] }}">
+                                    {{ category['category_name'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="price" class="block text-gray-700 font-bold mb-2">
+                                <i class="fas fa-dollar-sign text-green-500 mr-2"></i>ราคา (บาท)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price" 
+                                required
+                                step="0.01"
+                                min="0.01"
+                                placeholder="0.00"
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            >
+                        </div>
+
+                        <!-- Quantity -->
+                        <div>
+                            <label for="quantity" class="block text-gray-700 font-bold mb-2">
+                                <i class="fas fa-box text-blue-500 mr-2"></i>จำนวน (ชอ)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="quantity" 
+                                name="quantity" 
+                                required
+                                min="0"
+                                placeholder="0"
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-gray-700 font-bold mb-2">
+                            <i class="fas fa-file-alt text-yellow-500 mr-2"></i>รายละเอียด
+                        </label>
+                        <textarea 
+                            id="description" 
+                            name="description"
+                            rows="4"
+                            placeholder="อธิบายลักษณะ แหล่งที่มา หรือข้อมูลเพิ่มเติมของดอกไม้"
+                            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition resize-none"
+                        ></textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex gap-4 pt-6">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg"
+                        >
+                            <i class="fas fa-check mr-2"></i>เพิ่มดอกไม้
+                        </button>
+                        <a 
+                            href="{{ url_for('index') }}" 
+                            class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition text-center shadow-lg"
+                        >
+                            <i class="fas fa-times mr-2"></i>ยกเลิก
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <h3 class="font-bold text-blue-800 mb-2"><i class="fas fa-info-circle mr-2"></i>ข้อมูลที่ต้องกรอก:</h3>
+                <ul class="text-blue-700 text-sm space-y-1">
+                    <li><i class="fas fa-check text-green-600 mr-2"></i><strong>ชื่อดอกไม้:</strong> ชื่อที่ระบุ อย่าว่าง</li>
+                    <li><i class="fas fa-check text-green-600 mr-2"></i><strong>หมวดหมู่:</strong> ต้องเลือกจากรายการที่มี</li>
+                    <li><i class="fas fa-check text-green-600 mr-2"></i><strong>ราคา:</strong> ต้องมากกว่า 0 บาท</li>
+                    <li><i class="fas fa-check text-green-600 mr-2"></i><strong>จำนวน:</strong> ต้องมากกว่าหรือเท่ากับ 0</li>
+                    <li><i class="fas fa-info text-yellow-600 mr-2"></i><strong>รายละเอียด:</strong> เป็นตัวเลือก (ไม่จำเป็นต้องกรอก)</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-6 mt-12">
+        <p><i class="fas fa-copyright"></i> 2026 ระบบจัดการร้านดอกไม้</p>
+    </footer>
+</body>
+</html>

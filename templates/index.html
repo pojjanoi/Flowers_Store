@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการร้านดอกไม้ 🌸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .flower-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .flower-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .status-badge {
+            position: relative;
+            display: inline-block;
+        }
+        .status-badge.in-stock {
+            background-color: #10b981;
+        }
+        .status-badge.low-stock {
+            background-color: #f59e0b;
+        }
+        .status-badge.out-stock {
+            background-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-header text-white py-6 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-flower-tulip text-3xl"></i>
+                    <h1 class="text-3xl font-bold">🌸 ระบบจัดการร้านดอกไม้</h1>
+                </div>
+                <a href="{{ url_for('add_flower') }}" class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+                    <i class="fas fa-plus"></i> เพิ่มดอกไม้ใหม่
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg font-semibold text-white {% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} animate-pulse">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% if flowers %}
+            <div class="mb-6 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-list text-purple-600 mr-2"></i>รายการดอกไม้ทั้งหมด
+                </h2>
+                <span class="bg-purple-600 text-white px-4 py-2 rounded-full font-bold">
+                    {{ flowers|length }} รายการ
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for flower in flowers %}
+                    <div class="flower-card bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-purple-500">
+                        <!-- Card Header -->
+                        <div class="bg-gradient-to-r from-pink-400 to-purple-400 px-4 py-3">
+                            <h3 class="text-lg font-bold text-white truncate">{{ flower['flower_name'] }}</h3>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4">
+                            <!-- Category -->
+                            <div class="mb-3">
+                                <span class="inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                    <i class="fas fa-tag mr-1"></i>{{ flower['category_name'] }}
+                                </span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mb-3">
+                                <p class="text-gray-600 text-sm">ราคา</p>
+                                <p class="text-2xl font-bold text-green-600">฿{{ "%.2f"|format(flower['price']) }}</p>
+                            </div>
+
+                            <!-- Quantity Status -->
+                            <div class="mb-4">
+                                <p class="text-gray-600 text-sm mb-1">จำนวนคงเหลือ</p>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-xl font-bold text-gray-800">{{ flower['quantity'] }} ช่อ</p>
+                                    {% if flower['quantity'] > 20 %}
+                                        <span class="status-badge in-stock text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            <i class="fas fa-check-circle"></i> มีสต็อก
+                                        </span>
+                                    {% elif flower['quantity'] > 0 %}
+                                        <span class="status-badge low-stock text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            <i class="fas fa-exclamation-triangle"></i> ใกล้หมด
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge out-stock text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            <i class="fas fa-times-circle"></i> หมดแล้ว
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Description (truncated) -->
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ flower['description'] }}</p>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-2">
+                                <a href="{{ url_for('view_flower', flower_id=flower['flower_id']) }}" 
+                                   class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg font-semibold text-center transition text-sm">
+                                    <i class="fas fa-eye mr-1"></i>ดู
+                                </a>
+                                <a href="{{ url_for('edit_flower', flower_id=flower['flower_id']) }}" 
+                                   class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-3 rounded-lg font-semibold text-center transition text-sm">
+                                    <i class="fas fa-edit mr-1"></i>แก้ไข
+                                </a>
+                                <form action="{{ url_for('delete_flower', flower_id=flower['flower_id']) }}" method="POST" class="flex-1" onsubmit="return confirm('คุณแน่ใจหรือว่าจะลบรายการนี้?');">
+                                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg font-semibold transition text-sm">
+                                        <i class="fas fa-trash mr-1"></i>ลบ
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-16">
+                <div class="mb-4">
+                    <i class="fas fa-inbox text-6xl text-gray-300"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-600 mb-2">ยังไม่มีรายการดอกไม้</h2>
+                <p class="text-gray-500 mb-6">กรุณาเพิ่มดอกไม้เพื่อเริ่มต้นจัดการร้าน</p>
+                <a href="{{ url_for('add_flower') }}" class="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                    <i class="fas fa-plus mr-2"></i>เพิ่มดอกไม้ใหม่
+                </a>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-6 mt-12">
+        <p><i class="fas fa-copyright"></i> 2026 ระบบจัดการร้านดอกไม้ | พัฒนาด้วย Flask + SQLite + Tailwind CSS</p>
+    </footer>
+
+    <!-- Smooth Scroll -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ปิดข้อความแจ้งเตือนหลังจาก 5 วินาที
+        document.querySelectorAll('[role="alert"]').forEach(alert => {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
