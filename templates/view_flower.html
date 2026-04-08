@@ -78,11 +78,61 @@
             <div class="detail-card bg-white rounded-xl shadow-2xl overflow-hidden">
                 <!-- Header Section -->
                 <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 px-8 py-12">
-                    <h2 class="text-4xl font-bold text-white mb-2">{{ flower['flower_name'] }}</h2>
-                    <p class="text-white text-lg">
-                        <i class="fas fa-id-card mr-2"></i>
-                        รหัส: {{ flower['flower_id'] }}
-                    </p>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <!-- Flower Image -->
+                        <div class="flex-shrink-0">
+                            {% if flower['image_url'] %}
+                                <img src="{{ flower['image_url'] }}"
+                                     alt="{{ flower['flower_name'] }}"
+                                     class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full shadow-2xl border-4 border-white"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full shadow-2xl border-4 border-white flex items-center justify-center text-6xl" style="display: none;">
+                                    {% if 'กุหลาบ' in flower['category_name'] %}
+                                        🌹
+                                    {% elif 'ทานตะวัน' in flower['category_name'] %}
+                                        🌻
+                                    {% elif 'ลิลลี่' in flower['category_name'] or 'ลิลลี' in flower['category_name'] %}
+                                        🌸
+                                    {% elif 'ดอกลำดวน' in flower['category_name'] or 'ลำดวน' in flower['category_name'] %}
+                                        🌺
+                                    {% elif 'ดอกไม้เมืองหนาว' in flower['category_name'] or 'เมืองหนาว' in flower['category_name'] %}
+                                        ❄️
+                                    {% elif 'ดอกบัว' in flower['category_name'] or 'บัว' in flower['category_name'] %}
+                                        🪷
+                                    {% else %}
+                                        🌼
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full shadow-2xl border-4 border-white flex items-center justify-center text-6xl">
+                                    {% if 'กุหลาบ' in flower['category_name'] %}
+                                        🌹
+                                    {% elif 'ทานตะวัน' in flower['category_name'] %}
+                                        🌻
+                                    {% elif 'ลิลลี่' in flower['category_name'] or 'ลิลลี' in flower['category_name'] %}
+                                        🌸
+                                    {% elif 'ดอกลำดวน' in flower['category_name'] or 'ลำดวน' in flower['category_name'] %}
+                                        🌺
+                                    {% elif 'ดอกไม้เมืองหนาว' in flower['category_name'] or 'เมืองหนาว' in flower['category_name'] %}
+                                        ❄️
+                                    {% elif 'ดอกบัว' in flower['category_name'] or 'บัว' in flower['category_name'] %}
+                                        🪷
+                                    {% else %}
+                                        🌼
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Flower Info -->
+                        <div class="text-center md:text-left">
+                            <h2 class="text-4xl font-bold text-white mb-2">{{ flower['flower_name'] }}</h2>
+                            <p class="text-white text-lg">
+                                <i class="fas fa-id-card mr-2"></i>
+                                รหัส: {{ flower['flower_id'] }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Body Section -->

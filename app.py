@@ -30,7 +30,7 @@ def get_flowers():
     cursor = conn.cursor()
     cursor.execute('''
         SELECT f.flower_id, f.flower_name, c.category_name, f.price, 
-               f.quantity, f.description, f.category_id
+               f.quantity, f.description, f.category_id, f.image_url
         FROM Flowers f
         INNER JOIN Categories c ON f.category_id = c.category_id
         ORDER BY f.flower_id
@@ -45,7 +45,7 @@ def get_flower_by_id(flower_id):
     cursor = conn.cursor()
     cursor.execute('''
         SELECT f.flower_id, f.flower_name, c.category_name, f.price, 
-               f.quantity, f.description, f.category_id
+               f.quantity, f.description, f.category_id, f.image_url
         FROM Flowers f
         INNER JOIN Categories c ON f.category_id = c.category_id
         WHERE f.flower_id = ?
@@ -73,7 +73,8 @@ def api_get_flowers():
             'category_name': f['category_name'],
             'price': f['price'],
             'quantity': f['quantity'],
-            'description': f['description']
+            'description': f['description'],
+            'image_url': f['image_url']
         }
         for f in flowers
     ]
@@ -88,6 +89,7 @@ def add_flower():
         price = request.form.get('price')
         quantity = request.form.get('quantity')
         description = request.form.get('description')
+        image_url = request.form.get('image_url')
 
         # ตรวจสอบข้อมูล
         if not flower_name or not category_id or not price or quantity is None:
@@ -110,9 +112,9 @@ def add_flower():
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO Flowers (flower_name, category_id, price, quantity, description)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (flower_name, category_id, price, quantity, description))
+                INSERT INTO Flowers (flower_name, category_id, price, quantity, description, image_url)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (flower_name, category_id, price, quantity, description, image_url))
             conn.commit()
             conn.close()
 
@@ -141,6 +143,7 @@ def edit_flower(flower_id):
         price = request.form.get('price')
         quantity = request.form.get('quantity')
         description = request.form.get('description')
+        image_url = request.form.get('image_url')
 
         if not flower_name or not category_id or not price or quantity is None:
             flash('❌ กรุณากรอกข้อมูลให้ครบถ้วน', 'error')
@@ -163,9 +166,9 @@ def edit_flower(flower_id):
             cursor = conn.cursor()
             cursor.execute('''
                 UPDATE Flowers
-                SET flower_name = ?, category_id = ?, price = ?, quantity = ?, description = ?
+                SET flower_name = ?, category_id = ?, price = ?, quantity = ?, description = ?, image_url = ?
                 WHERE flower_id = ?
-            ''', (flower_name, category_id, price, quantity, description, flower_id))
+            ''', (flower_name, category_id, price, quantity, description, image_url, flower_id))
             conn.commit()
             conn.close()
 

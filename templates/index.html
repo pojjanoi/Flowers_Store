@@ -49,9 +49,12 @@
             background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
             transition: all 0.3s ease;
         }
-        .btn-gradient:hover {
-            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
-            transform: scale(1.05);
+        .flower-emoji {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
     </style>
 </head>
@@ -109,6 +112,50 @@
                         <!-- Card Header -->
                         <div class="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 px-5 py-4">
                             <h3 class="text-xl font-bold text-white truncate drop-shadow-lg">✨ {{ flower['flower_name'] }}</h3>
+                            <!-- Flower Image -->
+                            <div class="mt-3 flex justify-center">
+                                {% if flower['image_url'] %}
+                                    <img src="{{ flower['image_url'] }}"
+                                         alt="{{ flower['flower_name'] }}"
+                                         class="w-32 h-24 object-cover rounded-lg shadow-lg border-2 border-white/30 flower-emoji"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-32 h-24 bg-gradient-to-br from-pink-200 to-purple-300 rounded-lg shadow-lg border-2 border-white/30 flex items-center justify-center text-4xl flower-emoji" style="display: none;">
+                                        {% if 'กุหลาบ' in flower['category_name'] %}
+                                            🌹
+                                        {% elif 'ทานตะวัน' in flower['category_name'] %}
+                                            🌻
+                                        {% elif 'ลิลลี่' in flower['category_name'] or 'ลิลลี' in flower['category_name'] %}
+                                            🌸
+                                        {% elif 'ดอกลำดวน' in flower['category_name'] or 'ลำดวน' in flower['category_name'] %}
+                                            🌺
+                                        {% elif 'ดอกไม้เมืองหนาว' in flower['category_name'] or 'เมืองหนาว' in flower['category_name'] %}
+                                            ❄️
+                                        {% elif 'ดอกบัว' in flower['category_name'] or 'บัว' in flower['category_name'] %}
+                                            🪷
+                                        {% else %}
+                                            🌼
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="w-32 h-24 bg-gradient-to-br from-pink-200 to-purple-300 rounded-lg shadow-lg border-2 border-white/30 flex items-center justify-center text-4xl flower-emoji">
+                                        {% if 'กุหลาบ' in flower['category_name'] %}
+                                            🌹
+                                        {% elif 'ทานตะวัน' in flower['category_name'] %}
+                                            🌻
+                                        {% elif 'ลิลลี่' in flower['category_name'] or 'ลิลลี' in flower['category_name'] %}
+                                            🌸
+                                        {% elif 'ดอกลำดวน' in flower['category_name'] or 'ลำดวน' in flower['category_name'] %}
+                                            🌺
+                                        {% elif 'ดอกไม้เมืองหนาว' in flower['category_name'] or 'เมืองหนาว' in flower['category_name'] %}
+                                            ❄️
+                                        {% elif 'ดอกบัว' in flower['category_name'] or 'บัว' in flower['category_name'] %}
+                                            🪷
+                                        {% else %}
+                                            🌼
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <!-- Card Body -->
@@ -130,7 +177,7 @@
                             <div class="mb-5 bg-gradient-to-r from-blue-100 to-cyan-100 p-3 rounded-lg">
                                 <p class="text-blue-700 text-sm font-semibold mb-2">📦 จำนวนคงเหลือ</p>
                                 <div class="flex items-center justify-between">
-                                    <p class="text-2xl font-bold text-blue-800">{{ flower['quantity'] }} ชอ</p>
+                                    <p class="text-2xl font-bold text-blue-800">{{ flower['quantity'] }} ช่อ</p>
                                     {% if flower['quantity'] > 20 %}
                                         <span class="status-badge in-stock text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                                             <i class="fas fa-check-circle"></i> มี
